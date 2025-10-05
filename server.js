@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 // Enable CORS for your frontend port
 app.use(cors({
-  origin: "https://placement-predictor-frontend-three.vercel.app/", // React dev server
+  origin: "https://placement-predictor-frontend-three.vercel.app", // React dev server
 }));
 
 // Endpoint: POST /predict
@@ -43,4 +43,5 @@ app.post("/predict", (req, res) => {
 // Start server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`✅ Backend running on http://localhost:${PORT}`));
+
 
