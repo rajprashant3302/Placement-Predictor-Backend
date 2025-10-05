@@ -20,7 +20,7 @@ app.post("/predict", (req, res) => {
   const features = req.body.features; // Example: [5.1, 3.5, 1.4, 0.2]
 
   // Spawn Python process to run model.py
-  const python = spawn("python", [
+  const python = spawn("python3", [
     path.join(__dirname, "model.py"),
     JSON.stringify(features),
   ]);
@@ -43,5 +43,6 @@ app.post("/predict", (req, res) => {
 // Start server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`✅ Backend running on http://localhost:${PORT}`));
+
 
 
