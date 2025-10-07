@@ -1,49 +1,43 @@
-// backend/server.js
 const express = require("express");
-const bodyParser = require("body-parser");
 const { spawn } = require("child_process");
 const path = require("path");
-const cors = require("cors"); // ✅ import CORS
+const cors = require("cors");
 
 const app = express();
-
-// Middleware
-app.use(bodyParser.json());
-
-// Enable CORS for your frontend port
+app.use(express.json());
 app.use(cors({
-  origin: "https://placement-predictor-frontend-three.vercel.app", // React dev server
+  origin: ["http://localhost:5173", "https://placement-predictor-frontend-three.vercel.app"],
 }));
 
-// Endpoint: POST /predict
 app.post("/predict", (req, res) => {
-  const features = req.body.features; // Example: [5.1, 3.5, 1.4, 0.2]
 
-  // Spawn Python process to run model.py
-  const python = spawn("python", [
-    path.join(__dirname, "model.py"),
-    JSON.stringify(features),
-  ]);
+  // console.log("Received req:", req);
+  const features = req.body;
+
+  // console.log("Received features:", features);
+
+  const python = spawn("python", [path.join(__dirname, "model.py"),JSON.stringify(features)]);
 
   let result = "";
+  let error = "";
+
 
   python.stdout.on("data", (data) => {
     result += data.toString();
   });
 
   python.stderr.on("data", (data) => {
-    console.error(`Python error: ${data}`);
+    error += data.toString();
   });
 
-  python.on("close", () => {
+  python.on("close", (code) => {
+    if (error) {
+      // console.error("Python error:", error);
+      return res.status(500).json({ error });
+    }
+    // console.log("Prediction:", result.trim());
     res.json({ prediction: result.trim() });
   });
 });
 
-// Start server
-const PORT = 5000;
-app.listen(PORT, () => console.log(`✅ Backend running on http://localhost:${PORT}`));
-
-
-
-
+app.listen(5000, () => console.log("✅ Backend running on http://localhost:5000"));
